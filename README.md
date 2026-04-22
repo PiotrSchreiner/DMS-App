@@ -1,75 +1,38 @@
-# Nuxt Minimal Starter
+# DMS-App Core
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Ein modernes Dokumenten-Management-System (DMS) auf Basis von Nuxt 3 und Supabase.
 
-## Setup
+## 🎯 Ziel der App
 
-Make sure to install dependencies:
+Die App dient der effizienten Verwaltung, Speicherung und Kategorisierung von Dokumenten. Nutzer sollen in der Lage sein, Dateien hochzuladen, die dazugehörigen Metadaten in einer Datenbank zu speichern und die Dokumente über ein Dashboard zu verwalten.
 
-```bash
-# npm
-npm install
+## 🛠 Tech-Stack
 
-# pnpm
-pnpm install
+- **Framework:** [Nuxt 3](https://nuxt.com/)
+- **Frontend-Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **Backend/Datenbank:** [Supabase](https://supabase.com/) (PostgreSQL & Storage)
+- **Sprache:** TypeScript / Vue.js (Composition API)
 
-# yarn
-yarn install
+## 🏗 Projekt-Struktur
 
-# bun
-bun install
-```
+- `pages/`: Enthält die Hauptansichten (Dashboard).
+- `components/`: Wiederverwendbare UI-Elemente.
+- `layouts/`: Grundgerüste für die Seitenstruktur.
+- `app.vue`: Haupteinstiegspunkt der Anwendung.
 
-## Development Server
+## 🚀 Features (geplant & integriert)
 
-Start the development server on `http://localhost:3000`:
+- [x] Grundlegendes Dashboard-Layout mit Tailwind CSS
+- [x] Integration von `@nuxtjs/supabase`
+- [x] Datenbank-Schema für Dokumenten-Metadaten
+- [ ] Datei-Upload in den Supabase Storage
+- [ ] Dokumentenvorschau und Download-Funktion
+- [ ] Filter- und Suchfunktionen für Dateien
 
-```bash
-# npm
-npm run dev
+## ⚙️ Installation & Setup
 
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+1. Repository klonen
+2. Abhängigkeiten installieren:
+   ```bash
+   npm install
+   ```
