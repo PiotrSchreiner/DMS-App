@@ -36,8 +36,32 @@ Die App dient der effizienten Verwaltung, Speicherung und Kategorisierung von Do
 
 Die Anwendung nutzt Playwright für End-to-End Tests. Der Webserver wird für die Tests automatisch auf Port 3000 gestartet.
 
+### Test-Abdeckung (E2E)
+
+- [x] Initiales Laden der App (Smoke Test)
+- [x] Funktionalität des Suchfelds (User Input)
+- [x] Anzeige des Empty-State (Suche ohne Treffer)
+- [x] Validierung der Layout-Grundstruktur (Tailwind CSS Integration)
+- [ ] Vollständiger Datei-Upload-Flow (Mocking & Storage Check)
+- [ ] Dokumenten-Löschvorgang mit UI-Synchronisation
+- [ ] Download-Trigger & URL-Validierung
+
+### ⚙️ Installation & Setup
+
+1. Repository klonen
+
+2. Abhängigkeiten installieren:
+
+```bash
+
+npm install
+
+```
+
 ### Tests ausführen
 
 ```bash
+
 npx playwright test
+
 ```
