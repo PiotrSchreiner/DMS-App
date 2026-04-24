@@ -12,12 +12,14 @@ Die App dient der effizienten Verwaltung, Speicherung und Kategorisierung von Do
 - **Frontend-Styling:** [Tailwind CSS](https://tailwindcss.com/)
 - **Backend/Datenbank:** [Supabase](https://supabase.com/) (PostgreSQL & Storage)
 - **Sprache:** TypeScript / Vue.js (Composition API)
+- **Testing:** [Playwright](https://playwright.dev/)
 
 ## 🏗 Projekt-Struktur
 
 - `pages/`: Enthält die Hauptansichten (Dashboard).
 - `components/`: Wiederverwendbare UI-Elemente.
 - `layouts/`: Grundgerüste für die Seitenstruktur.
+- `tests/`: End-to-End Testdateien.
 - `app.vue`: Haupteinstiegspunkt der Anwendung.
 
 ## 🚀 Features (geplant & integriert)
@@ -27,12 +29,15 @@ Die App dient der effizienten Verwaltung, Speicherung und Kategorisierung von Do
 - [x] Datenbank-Schema für Dokumenten-Metadaten
 - [x] Datei-Upload in den Supabase Storage
 - [x] Dokumentenvorschau und Download-Funktion
-- [ ] Filter- und Suchfunktionen für Dateien
+- [x] Filter- und Suchfunktionen für Dateien
+- [x] E2E-Testing mit Playwright & GitHub Actions CI
 
-## ⚙️ Installation & Setup
+## 🧪 Testing
 
-1. Repository klonen
-2. Abhängigkeiten installieren:
-   ```bash
-   npm install
-   ```
+Die Anwendung nutzt Playwright für End-to-End Tests. Der Webserver wird für die Tests automatisch auf Port 3000 gestartet.
+
+### Tests ausführen
+
+```bash
+npx playwright test
+```
