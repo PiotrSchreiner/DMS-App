@@ -3,6 +3,7 @@ const supabase = useSupabaseClient();
 const documents = ref([]);
 const uploading = ref(false);
 const selectedFile = ref(null);
+const searchQuery = ref("");
 
 async function fetchDocuments() {
   const { data } = await supabase
@@ -12,13 +13,43 @@ async function fetchDocuments() {
   documents.value = data || [];
 }
 
+const filteredDocuments = computed(() => {
+  if (!searchQuery.value) return documents.value;
+  return documents.value.filter((doc) =>
+    doc.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+  );
+});
+
+function getPublicUrl(path) {
+  const { data } = supabase.storage.from("files").getPublicUrl(path);
+  return data.publicUrl;
+}
+
+async function deleteDocument(doc) {
+  if (!confirm(`Möchtest du "${doc.name}" wirklich löschen?`)) return;
+
+  try {
+    await supabase.storage.from("files").remove([doc.file_path]);
+  } catch (e) {
+    console.log("Datei war im Storage wohl schon weg.");
+  }
+
+  const { error } = await supabase.from("documents").delete().eq("id", doc.id);
+
+  if (!error) {
+    documents.value = documents.value.filter((d) => d.id !== doc.id);
+    console.log("Eintrag erfolgreich entfernt.");
+  } else {
+    console.error("DB-Löschfehler:", error.message);
+  }
+}
+
 function handleFileSelection(event) {
   selectedFile.value = event.target.files[0];
 }
 
 async function uploadFile() {
   if (!selectedFile.value) return;
-
   uploading.value = true;
   const file = selectedFile.value;
   const fileName = `${Date.now()}-${file.name}`;
@@ -28,92 +59,138 @@ async function uploadFile() {
     .upload(fileName, file);
 
   if (!storageError) {
-    await supabase.from("documents").insert({
-      name: file.name,
-      file_path: storageData.path,
-      file_type: file.type,
-      size_kb: Math.round(file.size / 1024),
-    });
-    selectedFile.value = null;
-    await fetchDocuments();
-  }
+    const { data: dbData } = await supabase
+      .from("documents")
+      .insert({
+        name: file.name,
+        file_path: storageData.path,
+        file_type: file.type,
+        size_kb: Math.round(file.size / 1024),
+      })
+      .select();
 
+    if (dbData) documents.value.unshift(dbData[0]);
+    selectedFile.value = null;
+  }
   uploading.value = false;
 }
 
-onMounted(() => {
-  fetchDocuments();
-});
+onMounted(() => fetchDocuments());
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 p-8">
-    <div class="max-w-4xl mx-auto">
-      <header class="mb-8">
-        <h1 class="text-3xl font-bold">DMS Dashboard</h1>
+  <div class="min-h-screen bg-gray-50 p-8 text-black font-sans">
+    <div class="max-w-5xl mx-auto">
+      <header class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold italic uppercase tracking-tighter">
+          DMS Dashboard
+        </h1>
+        <div
+          class="bg-blue-100 text-blue-800 px-4 py-1 rounded-full text-sm font-bold"
+        >
+          {{ documents.length }} Dokumente
+        </div>
       </header>
 
-      <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-2"
-          >Datei auswählen</label
-        >
-        <div class="flex items-center gap-4">
-          <input
-            type="file"
-            @change="handleFileSelection"
-            data-testid="file-input"
-            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-          />
-          <button
-            @click="uploadFile"
-            :disabled="!selectedFile || uploading"
-            data-testid="upload-button"
-            class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <label
+            class="block text-xs font-bold text-gray-400 uppercase mb-2 italic"
+            >Suche</label
           >
-            {{ uploading ? "Lädt..." : "Upload" }}
-          </button>
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Dateiname suchen..."
+            class="w-full border-gray-200 rounded-xl p-3 bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition"
+          />
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <label
+            class="block text-xs font-bold text-gray-400 uppercase mb-2 italic"
+            >Neuer Upload</label
+          >
+          <div class="flex gap-2">
+            <input
+              type="file"
+              @change="handleFileSelection"
+              class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 font-bold"
+            />
+            <button
+              @click="uploadFile"
+              :disabled="!selectedFile || uploading"
+              class="bg-blue-600 text-white px-5 py-2 rounded-xl font-bold disabled:bg-gray-200 transition hover:bg-blue-700 shadow-md"
+            >
+              {{ uploading ? "..." : "Upload" }}
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="bg-white shadow-sm rounded-xl overflow-hidden">
-        <table
-          class="min-w-full divide-y divide-gray-200"
-          data-testid="document-table"
-        >
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
-              >
+      <div
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+      >
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gray-50 border-b border-gray-100">
+              <th class="p-4 text-xs font-bold text-gray-400 uppercase italic">
+                Vorschau
+              </th>
+              <th class="p-4 text-xs font-bold text-gray-400 uppercase italic">
                 Name
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="p-4 text-xs font-bold text-gray-400 uppercase italic text-right"
               >
-                Datum
+                Aktionen
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200">
+          <tbody>
             <tr
-              v-for="doc in documents"
+              v-for="doc in filteredDocuments"
               :key="doc.id"
-              data-testid="document-row"
+              class="border-b border-gray-50 hover:bg-blue-50/50 transition"
             >
-              <td class="px-6 py-4 text-sm font-medium text-gray-900">
-                {{ doc.name }}
+              <td class="p-4">
+                <img
+                  v-if="doc.file_type?.includes('image')"
+                  :src="getPublicUrl(doc.file_path)"
+                  class="w-12 h-12 object-cover rounded-lg shadow-sm border border-white"
+                />
+                <div
+                  v-else
+                  class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-[10px] font-black text-gray-500 uppercase"
+                >
+                  {{ doc.file_type?.split("/")[1] || "??" }}
+                </div>
               </td>
-              <td class="px-6 py-4 text-sm text-gray-500">
-                {{ new Date(doc.created_at).toLocaleDateString() }}
+              <td class="p-4 font-semibold text-gray-800">{{ doc.name }}</td>
+              <td class="p-4 text-right">
+                <div class="flex justify-end gap-4">
+                  <a
+                    :href="getPublicUrl(doc.file_path)"
+                    target="_blank"
+                    class="text-blue-600 hover:scale-110 transition font-bold text-sm"
+                    >Öffnen</a
+                  >
+                  <button
+                    @click="deleteDocument(doc)"
+                    class="text-red-500 hover:scale-110 transition font-bold text-sm"
+                  >
+                    Löschen
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
         <div
-          v-if="documents.length === 0"
-          class="p-10 text-center text-gray-400"
+          v-if="filteredDocuments.length === 0"
+          class="p-20 text-center text-gray-300 font-medium italic"
         >
-          Noch keine Dokumente vorhanden.
+          Keine Dateien gefunden.
         </div>
       </div>
     </div>
