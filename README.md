@@ -25,7 +25,7 @@ Die App dient der effizienten Verwaltung, Speicherung und Kategorisierung von Do
 - [x] Grundlegendes Dashboard-Layout mit Tailwind CSS
 - [x] Integration von `@nuxtjs/supabase`
 - [x] Datenbank-Schema für Dokumenten-Metadaten
-- [ ] Datei-Upload in den Supabase Storage
+- [x] Datei-Upload in den Supabase Storage
 - [ ] Dokumentenvorschau und Download-Funktion
 - [ ] Filter- und Suchfunktionen für Dateien
 
