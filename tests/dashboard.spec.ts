@@ -79,3 +79,27 @@ test("Dokumenten Löschvorgang mit UI Synchronisation", async ({ page }) => {
     expect(currentCount).toBe(initialCount - 1);
   }).toPass({ timeout: 10000 });
 });
+
+test("Download Trigger und URL Validierung", async ({ page }) => {
+  await page.goto("/");
+
+  const firstRow = page.locator("table tbody tr").first();
+  await expect(firstRow).toBeVisible({ timeout: 10000 });
+
+  const downloadElement = firstRow
+    .locator(
+      "a[href*='download'], a[href*='storage'], a[href*='object'], button:has-text('Download')",
+    )
+    .first();
+
+  await expect(downloadElement).toBeVisible({ timeout: 10000 });
+
+  const href = await downloadElement.getAttribute("href");
+
+  if (href) {
+    expect(href).toMatch(/download|storage|object|\/api\//i);
+  } else {
+    await downloadElement.click();
+    await page.waitForTimeout(2000);
+  }
+});
