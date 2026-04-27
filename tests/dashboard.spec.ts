@@ -56,3 +56,26 @@ test("Vollständiger Datei-Upload Flow", async ({ page }, testInfo) => {
     }
   }
 });
+
+test("Dokumenten Löschvorgang mit UI Synchronisation", async ({ page }) => {
+  await page.goto("/");
+
+  page.on("dialog", (dialog) => dialog.accept());
+
+  const tableRows = page.locator("table tbody tr");
+  await expect(tableRows.first()).toBeVisible({ timeout: 10000 });
+
+  const initialCount = await tableRows.count();
+
+  const rowToDelete = tableRows.first();
+  const deleteButton = rowToDelete.getByRole("button", {
+    name: /Löschen|Delete/i,
+  });
+
+  await deleteButton.click({ force: true });
+
+  await expect(async () => {
+    const currentCount = await tableRows.count();
+    expect(currentCount).toBe(initialCount - 1);
+  }).toPass({ timeout: 10000 });
+});

@@ -42,8 +42,8 @@ Die Anwendung nutzt Playwright für End-to-End Tests. Der Webserver wird für di
 - [x] Funktionalität des Suchfelds (User Input)
 - [x] Anzeige des Empty-State (Suche ohne Treffer)
 - [x] Validierung der Layout-Grundstruktur (Tailwind CSS Integration)
-- [ ] Vollständiger Datei-Upload-Flow (Mocking & Storage Check)
-- [ ] Dokumenten-Löschvorgang mit UI-Synchronisation
+- [x] Vollständiger Datei-Upload-Flow (Mocking & Storage Check)
+- [x] Dokumenten-Löschvorgang mit UI-Synchronisation
 - [ ] Download-Trigger & URL-Validierung
 
 ### ⚙️ Installation & Setup
