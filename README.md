@@ -14,13 +14,13 @@ Die App dient der effizienten Verwaltung, Speicherung und Kategorisierung von Do
 - **Sprache:** TypeScript / Vue.js (Composition API)
 - **Testing:** [Playwright](https://playwright.dev/)
 
-## 🏗 Projekt-Struktur
+## 🏗 Projekt-Struktur (Refactored)
 
-- `pages/`: Enthält die Hauptansichten (Dashboard).
-- `components/`: Wiederverwendbare UI-Elemente.
-- `layouts/`: Grundgerüste für die Seitenstruktur.
-- `tests/`: End-to-End Testdateien.
-- `app.vue`: Haupteinstiegspunkt der Anwendung.
+- `pages/index.vue`: Neue Startseite mit Login-Weiche (User / Kanzlei).
+- `pages/dashboard.vue`: Das bestehende Dokumenten-Management-System (geschützter Bereich).
+- `components/`: Wiederverwendbare UI-Elemente für Upload und Dateiliste.
+- `layouts/`: Grundgerüste für Landingpage und App-Ansicht.
+- `tests/`: E2E Testdateien für Dashboard und Auth-Flow.
 
 ## 🚀 Features (geplant & integriert)
 
@@ -30,11 +30,13 @@ Die App dient der effizienten Verwaltung, Speicherung und Kategorisierung von Do
 - [x] Datei-Upload in den Supabase Storage
 - [x] Dokumentenvorschau und Download-Funktion
 - [x] Filter- und Suchfunktionen für Dateien
-- [x] E2E-Testing mit Playwright & GitHub Actions CI
+- [x] E2E-Testing mit Playwright (inkl. Lösch- & Download-Validierung)
+- [ ] **Neu:** Split-Screen Login-Bereich (User-Login vs. Kanzlei-Placeholder)
+- [ ] **Neu:** Middleware Schutz für den Dashboard-Bereich
 
 ## 🧪 Testing
 
-Die Anwendung nutzt Playwright für End-to-End Tests. Der Webserver wird für die Tests automatisch auf Port 3000 gestartet.
+Die Anwendung nutzt Playwright für End-to-End Tests.
 
 ### Test-Abdeckung (E2E)
 
@@ -49,19 +51,8 @@ Die Anwendung nutzt Playwright für End-to-End Tests. Der Webserver wird für di
 ### ⚙️ Installation & Setup
 
 1. Repository klonen
-
 2. Abhängigkeiten installieren:
 
 ```bash
-
 npm install
-
-```
-
-### Tests ausführen
-
-```bash
-
-npx playwright test
-
 ```
